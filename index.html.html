@@ -1,0 +1,571 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;min-height:100vh;overflow-x:hidden;color:#fff;background:#000}
+#app{min-height:100vh;position:relative;display:flex;flex-direction:column;align-items:center}
+.bg-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.sky-svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.doggo{position:fixed;bottom:70px;right:6px;z-index:20;cursor:pointer;animation:dogFloat 3s ease-in-out infinite;width:72px}
+@keyframes dogFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+.speech{position:absolute;bottom:76px;right:0;background:#fffdf5;color:#333;font-size:10px;padding:5px 9px;border-radius:10px;border-bottom-right-radius:2px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none;border:1px solid #f0e0c0}
+.doggo:hover .speech{display:block}
+#content{position:relative;z-index:10;width:100%;max-width:400px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 16px 120px}
+#startScreen{text-align:center;padding-top:50px;width:100%}
+.title-badge{background:rgba(255,200,50,.25);border:1px solid rgba(255,200,50,.6);color:#ffd700;font-size:11px;padding:4px 14px;border-radius:20px;display:inline-block;margin-bottom:14px;letter-spacing:2px;font-weight:700}
+.main-title{font-family:'Noto Serif KR',serif;font-size:34px;font-weight:900;line-height:1.2;color:#fff;text-shadow:0 0 30px rgba(255,180,50,.5);margin-bottom:8px}
+.main-title span{color:#ffd700}
+.subtitle{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:28px;line-height:1.6}
+.palace-card{background:rgba(0,0,0,.4);border:1px solid rgba(255,200,50,.3);border-radius:16px;padding:18px;margin:0 auto 28px;width:100%}
+.range-text{font-size:11px;color:#ffd700;margin-bottom:10px;font-weight:700;letter-spacing:1px}
+.topics{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.topic-tag{background:rgba(255,200,50,.1);border:1px solid rgba(255,200,50,.35);color:rgba(255,255,255,.85);font-size:11px;padding:3px 9px;border-radius:20px}
+.start-btn{background:#ffd700;color:#1a0800;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:18px;border:none;padding:16px 48px;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(255,200,50,.5);transition:all .2s;letter-spacing:1px;width:100%}
+.start-btn:hover{transform:translateY(-2px);background:#ffe033}
+.start-btn:active{transform:scale(.98)}
+#quizScreen{display:none;width:100%;padding-top:20px}
+.progress-wrap{margin-bottom:18px;width:100%}
+.prog-info{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:7px}
+.prog-bar{height:7px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#c8860a,#ffd700);border-radius:4px;transition:width .5s ease}
+.q-card{background:rgba(0,0,0,.55);border:1px solid rgba(255,200,50,.22);border-radius:20px;padding:22px 18px;margin-bottom:18px}
+.q-era{font-size:11px;color:#ffd700;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.q-unit{font-size:10px;color:rgba(255,200,50,.6);margin-bottom:10px}
+.q-text{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;line-height:1.8;color:#fff}
+.ox-btns{display:flex;gap:12px;margin-bottom:16px}
+.ox-btn{flex:1;height:80px;border-radius:16px;border:2px solid transparent;cursor:pointer;font-size:42px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:rgba(255,255,255,.06)}
+#oBtn{border-color:rgba(50,210,100,.45);color:#28e070}
+#xBtn{border-color:rgba(230,60,60,.45);color:#e83c3c}
+.ox-btn:hover{transform:scale(1.05)}
+.ox-btn:active{transform:scale(.95)}
+.ox-btn.sel-o{background:rgba(50,210,100,.22);border-color:#28e070;box-shadow:0 0 22px rgba(50,210,100,.35)}
+.ox-btn.sel-x{background:rgba(230,60,60,.22);border-color:#e83c3c;box-shadow:0 0 22px rgba(230,60,60,.35)}
+.ox-btn.dis{pointer-events:none;opacity:.55}
+.feedback{border-radius:14px;padding:16px;margin-bottom:14px;display:none;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.feedback.ok{background:rgba(40,180,90,.14);border:1px solid rgba(40,180,90,.4)}
+.feedback.ng{background:rgba(220,50,50,.14);border:1px solid rgba(220,50,50,.4)}
+.fb-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fb-icon{font-size:20px}
+.fb-lbl{font-size:14px;font-weight:900}
+.ok .fb-lbl{color:#28e070}
+.ng .fb-lbl{color:#e83c3c}
+.fb-desc{font-size:13px;color:rgba(255,255,255,.88);line-height:1.7}
+.fb-unit{font-size:11px;color:rgba(255,200,50,.85);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1);font-weight:700}
+.fb-ans{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.next-btn{width:100%;padding:15px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;border-radius:14px;cursor:pointer;transition:all .2s;letter-spacing:1px;display:none;border:none}
+.next-btn.ok{background:#28e070;color:#003318;box-shadow:0 4px 16px rgba(40,220,110,.4)}
+.next-btn.ng{background:#e83c3c;color:#fff;box-shadow:0 4px 16px rgba(230,60,60,.35)}
+.next-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.next-btn:active{transform:scale(.98)}
+#resultScreen{display:none;width:100%;text-align:center;padding-top:36px}
+.res-emoji{font-size:64px;margin-bottom:14px;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+.res-title{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:900;margin-bottom:6px}
+.res-score{font-size:56px;font-weight:900;color:#ffd700;font-family:'Noto Serif KR',serif;margin:6px 0}
+.res-label{font-size:13px;color:rgba(255,255,255,.5)}
+.res-grade{font-size:13px;margin:18px 0;padding:14px 20px;border-radius:12px;font-weight:700;line-height:1.5}
+.res-review{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px;margin:16px 0;text-align:left;max-height:320px;overflow-y:auto}
+.ri{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;line-height:1.6}
+.ri:last-child{border-bottom:none}
+.ri-q{color:rgba(255,255,255,.82);margin-bottom:4px;font-size:12px}
+.ri-ok{color:#28e070;font-weight:700}
+.ri-ng{color:#e83c3c;font-weight:700}
+.ri-exp{color:rgba(255,255,255,.5);font-size:11px;margin-top:3px}
+.ri-unit{color:rgba(255,200,50,.75);font-size:11px;font-weight:700;margin-top:2px}
+.retry-btn{background:#ffd700;color:#1a0800;font-family:'Noto Sans KR',sans-serif;font-weight:900;font-size:16px;border:none;padding:14px 40px;border-radius:50px;cursor:pointer;margin-top:8px;width:100%}
+.retry-btn:hover{background:#ffe033;transform:translateY(-2px)}
+</style>
+
+<div id="app">
+<div class="bg-layer">
+  <svg class="sky-svg" id="skySvg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="moonG" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#fffce8"/><stop offset="100%" stop-color="#f0c060"/></radialGradient>
+      <radialGradient id="sunG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fffbe0"/><stop offset="100%" stop-color="#f7c43a" stop-opacity="0"/></radialGradient>
+    </defs>
+    <rect id="skyR" x="0" y="0" width="400" height="700" fill="#0d0522"/>
+    <g id="starsG" opacity="1">
+      <circle cx="28" cy="28" r="1.2" fill="white" opacity=".9"/><circle cx="78" cy="52" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="118" cy="18" r="1" fill="white" opacity=".8"/><circle cx="162" cy="62" r="1" fill="white" opacity=".6"/>
+      <circle cx="208" cy="32" r="1.8" fill="white" opacity=".5"/><circle cx="252" cy="12" r="1" fill="white" opacity=".9"/>
+      <circle cx="302" cy="42" r="1.5" fill="white" opacity=".7"/><circle cx="348" cy="20" r="1" fill="white" opacity=".8"/>
+      <circle cx="58" cy="78" r="1" fill="white" opacity=".5"/><circle cx="142" cy="88" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="222" cy="68" r="1" fill="white" opacity=".8"/><circle cx="282" cy="92" r="1" fill="white" opacity=".6"/>
+      <circle cx="372" cy="58" r="1.5" fill="white" opacity=".7"/><circle cx="12" cy="102" r="1" fill="white" opacity=".9"/>
+      <circle cx="98" cy="112" r="1" fill="white" opacity=".5"/><circle cx="188" cy="106" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="322" cy="116" r="1" fill="white" opacity=".8"/><circle cx="392" cy="96" r="1" fill="white" opacity=".6"/>
+      <circle cx="40" cy="136" r="1" fill="white" opacity=".4"/><circle cx="176" cy="126" r="1" fill="white" opacity=".6"/>
+      <circle cx="328" cy="132" r="1" fill="white" opacity=".5"/><circle cx="355" cy="75" r="1.2" fill="white" opacity=".8"/>
+    </g>
+    <circle id="sunC" cx="300" cy="90" r="38" fill="url(#sunG)" opacity="0"/>
+    <circle id="moonC" cx="320" cy="85" r="26" fill="url(#moonG)" opacity="1"/>
+    <g id="cloudsDay" opacity="0">
+      <ellipse cx="80" cy="120" rx="48" ry="18" fill="rgba(255,240,200,.22)"/>
+      <ellipse cx="112" cy="113" rx="32" ry="14" fill="rgba(255,240,200,.18)"/>
+      <ellipse cx="295" cy="150" rx="52" ry="16" fill="rgba(255,240,200,.2)"/>
+      <ellipse cx="268" cy="142" rx="30" ry="12" fill="rgba(255,240,200,.15)"/>
+    </g>
+    <g id="cloudsDawn" opacity="0">
+      <ellipse cx="100" cy="140" rx="52" ry="15" fill="rgba(255,140,90,.18)"/>
+      <ellipse cx="285" cy="165" rx="58" ry="13" fill="rgba(255,110,70,.15)"/>
+    </g>
+    <!-- 경복궁 실루엣 -->
+    <g transform="translate(0,390)">
+      <rect x="0" y="268" width="400" height="42" fill="#080500"/>
+      <rect x="0" y="244" width="98" height="26" fill="#0f0800"/>
+      <path d="M0 244 Q49 237 98 244" fill="#0c0600"/>
+      <rect x="302" y="244" width="98" height="26" fill="#0f0800"/>
+      <path d="M302 244 Q351 237 400 244" fill="#0c0600"/>
+      <rect x="58" y="194" width="46" height="52" fill="#140a01"/>
+      <path d="M50 194 L81 170 L112 194Z" fill="#120900"/>
+      <path d="M52 181 Q81 170 110 181" fill="none" stroke="#2c1805" stroke-width="1.3"/>
+      <line x1="81" y1="170" x2="81" y2="162" stroke="#2c1805" stroke-width="1.2"/>
+      <rect x="296" y="194" width="46" height="52" fill="#140a01"/>
+      <path d="M288 194 L319 170 L350 194Z" fill="#120900"/>
+      <path d="M290 181 Q319 170 348 181" fill="none" stroke="#2c1805" stroke-width="1.3"/>
+      <line x1="319" y1="170" x2="319" y2="162" stroke="#2c1805" stroke-width="1.2"/>
+      <rect x="104" y="208" width="192" height="62" fill="#1b0e02"/>
+      <path d="M136 270 Q136 248 155 248 Q174 248 174 270Z" fill="#060300"/>
+      <path d="M226 270 Q226 248 245 248 Q264 248 264 270Z" fill="#060300"/>
+      <path d="M86 208 Q200 188 314 208" fill="#160c02" stroke="#2c1805" stroke-width="1"/>
+      <path d="M86 208 C73 205 66 200 58 194" fill="none" stroke="#2c1805" stroke-width="1.5"/>
+      <path d="M314 208 C327 205 334 200 342 194" fill="none" stroke="#2c1805" stroke-width="1.5"/>
+      <rect x="130" y="173" width="140" height="37" fill="#1b0e02"/>
+      <path d="M114 173 Q200 153 286 173" fill="#160c02" stroke="#2c1805" stroke-width="1"/>
+      <path d="M114 173 C102 170 96 165 88 160" fill="none" stroke="#2c1805" stroke-width="1.5"/>
+      <path d="M286 173 C298 170 304 165 312 160" fill="none" stroke="#2c1805" stroke-width="1.5"/>
+      <rect x="183" y="148" width="34" height="7" rx="2" fill="#2c1805"/>
+      <rect x="16" y="240" width="5" height="30" fill="#180c02"/>
+      <ellipse cx="18" cy="230" rx="17" ry="22" fill="#0c1804"/>
+      <ellipse cx="11" cy="238" rx="11" ry="16" fill="#091302"/>
+      <rect x="379" y="240" width="5" height="30" fill="#180c02"/>
+      <ellipse cx="381" cy="230" rx="17" ry="22" fill="#0c1804"/>
+      <ellipse cx="388" cy="238" rx="11" ry="16" fill="#091302"/>
+      <rect x="0" y="266" width="400" height="44" fill="#080500"/>
+    </g>
+  </svg>
+</div>
+
+<!-- 시고르자브종 -->
+<div class="doggo" id="doggo">
+  <div class="speech">같이 공부하자멍! 🐾</div>
+  <svg viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg" width="72" height="78">
+    <ellipse cx="90" cy="75" rx="11" ry="7" fill="#f0e0c0" transform="rotate(-25 90 75)"/>
+    <ellipse cx="55" cy="88" rx="34" ry="26" fill="#f8f0e0"/>
+    <ellipse cx="55" cy="92" rx="22" ry="18" fill="#fffaf4"/>
+    <ellipse cx="36" cy="108" rx="10" ry="6" fill="#f0e0c0"/>
+    <ellipse cx="74" cy="108" rx="10" ry="6" fill="#f0e0c0"/>
+    <ellipse cx="42" cy="110" rx="9" ry="5" fill="#f5ead5"/>
+    <ellipse cx="68" cy="110" rx="9" ry="5" fill="#f5ead5"/>
+    <circle cx="55" cy="48" r="28" fill="#f8f0e0"/>
+    <path d="M30 38 Q20 34 18 52 Q17 65 28 68 Q34 60 34 45Z" fill="#e8d4a8"/>
+    <path d="M80 38 Q90 34 92 52 Q93 65 82 68 Q76 60 76 45Z" fill="#e8d4a8"/>
+    <path d="M30 42 Q22 40 21 54 Q21 63 28 65 Q32 58 32 46Z" fill="#ddc090" opacity=".6"/>
+    <path d="M80 42 Q88 40 89 54 Q89 63 82 65 Q78 58 78 46Z" fill="#ddc090" opacity=".6"/>
+    <circle cx="44" cy="45" r="6" fill="#1a0a00"/>
+    <circle cx="66" cy="45" r="6" fill="#1a0a00"/>
+    <circle cx="46" cy="43" r="2" fill="white"/>
+    <circle cx="68" cy="43" r="2" fill="white"/>
+    <path d="M38 38 Q44 35 50 38" fill="none" stroke="#c8a870" stroke-width="2" stroke-linecap="round"/>
+    <path d="M60 38 Q66 35 72 38" fill="none" stroke="#c8a870" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="55" cy="56" rx="6" ry="4.5" fill="#b06040"/>
+    <ellipse cx="55" cy="55" rx="5" ry="2" fill="#8a4830" opacity=".5"/>
+    <ellipse cx="53" cy="54.5" rx="1.5" ry="1" fill="white" opacity=".4"/>
+    <path d="M50 62 Q55 70 60 62" fill="none" stroke="#e07575" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="55" cy="66" rx="5" ry="4" fill="#e06868" opacity=".9"/>
+    <path d="M53 66 Q55 70 57 66" fill="#c85555" opacity=".5"/>
+    <circle cx="34" cy="56" r="8" fill="#f8f0e0" opacity=".9"/>
+    <circle cx="76" cy="56" r="8" fill="#f8f0e0" opacity=".9"/>
+    <path d="M40 24 Q55 18 70 24 Q65 30 55 28 Q45 30 40 24Z" fill="#f0e4c8" opacity=".7"/>
+    <path d="M30 80 Q28 72 32 65" fill="none" stroke="#e8d8b8" stroke-width="1.5" opacity=".6"/>
+    <path d="M80 80 Q82 72 78 65" fill="none" stroke="#e8d8b8" stroke-width="1.5" opacity=".6"/>
+  </svg>
+</div>
+
+<div id="content">
+  <div id="startScreen">
+    <div class="title-badge">📖 고등 한국사 1</div>
+    <div class="main-title">역사 <span>OX</span><br>퀴즈</div>
+    <div class="subtitle">개항기부터 광복까지<br>동아출판사 한국사1 (노대환) 기반</div>
+    <div class="palace-card">
+      <div class="range-text">📚 출제 범위</div>
+      <div class="topics">
+        <span class="topic-tag">강화도 조약</span><span class="topic-tag">임오군란</span>
+        <span class="topic-tag">갑신정변</span><span class="topic-tag">동학농민운동</span>
+        <span class="topic-tag">갑오개혁</span><span class="topic-tag">대한제국</span>
+        <span class="topic-tag">국권 피탈</span><span class="topic-tag">3·1운동</span>
+        <span class="topic-tag">임시정부</span><span class="topic-tag">독립운동</span>
+        <span class="topic-tag">일제강점기</span><span class="topic-tag">광복</span>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작하기 🎯</button>
+  </div>
+
+  <div id="quizScreen">
+    <div class="progress-wrap">
+      <div class="prog-info">
+        <span id="qNum">문제 1 / 10</span>
+        <span id="qScore">점수: 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:10%"></div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-era" id="qEra"></div>
+      <div class="q-unit" id="qUnit"></div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="ox-btns">
+      <button class="ox-btn" id="oBtn" onclick="answer(true)">⭕</button>
+      <button class="ox-btn" id="xBtn" onclick="answer(false)">❌</button>
+    </div>
+    <div class="feedback" id="feedback">
+      <div class="fb-top">
+        <span class="fb-icon" id="fbIcon"></span>
+        <span class="fb-lbl" id="fbLbl"></span>
+      </div>
+      <div class="fb-desc" id="fbDesc"></div>
+      <div class="fb-unit" id="fbUnit"></div>
+      <div class="fb-ans" id="fbAns"></div>
+    </div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()"></button>
+  </div>
+
+  <div id="resultScreen">
+    <div class="res-emoji" id="resEmoji"></div>
+    <div class="res-title" id="resTitle"></div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-label">10문제 중</div>
+    <div class="res-grade" id="resGrade"></div>
+    <div class="res-review" id="resReview"></div>
+    <button class="retry-btn" onclick="restart()">다시 도전하기 🔄</button>
+  </div>
+</div>
+</div>
+
+<script>
+const THEMES={
+  morning:{id:'morning',label:'🌅 아침',skyColors:['#1a0530','#7a3060','#c05030','#e87030']},
+  day:{id:'day',label:'☀️ 낮',skyColors:['#2266aa','#3388cc','#66aadd','#99ccee']},
+  night:{id:'night',label:'🌙 밤',skyColors:['#0d0522','#160840','#1e0a3c','#28083a']},
+  dawn:{id:'dawn',label:'🌃 새벽',skyColors:['#0a0318','#180630','#2a0840','#1a0530']}
+};
+function getThemeKey(i){return i<=2?'morning':i<=5?'day':i<=8?'night':'dawn'}
+
+function applySky(i){
+  const tk=getThemeKey(i),th=THEMES[tk];
+  const svg=document.getElementById('skySvg');
+  let dd=svg.querySelector('#_gd');
+  if(!dd){dd=document.createElementNS('http://www.w3.org/2000/svg','defs');dd.id='_gd';svg.insertBefore(dd,svg.firstChild)}
+  dd.innerHTML=Object.values(THEMES).map(t=>`<linearGradient id="sg_${t.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${t.skyColors[0]}"/><stop offset="33%" stop-color="${t.skyColors[1]}"/><stop offset="66%" stop-color="${t.skyColors[2]}"/><stop offset="100%" stop-color="${t.skyColors[3]}"/></linearGradient>`).join('');
+  document.getElementById('skyR').setAttribute('fill',`url(#sg_${tk})`);
+  const isMorning=tk==='morning',isDay=tk==='day',isNight=tk==='night',isDawn=tk==='dawn';
+  document.getElementById('starsG').setAttribute('opacity',(isNight||isDawn)?'1':'0');
+  document.getElementById('sunC').setAttribute('opacity',isMorning?'0.6':isDay?'1':'0');
+  document.getElementById('moonC').setAttribute('opacity',(isNight||isDawn)?'1':'0');
+  document.getElementById('cloudsDay').setAttribute('opacity',isDay?'1':isMorning?'0.5':'0');
+  document.getElementById('cloudsDawn').setAttribute('opacity',isDawn?'1':'0');
+  if(isMorning){document.getElementById('sunC').setAttribute('cy','370');document.getElementById('sunC').setAttribute('cx','200')}
+  else{document.getElementById('sunC').setAttribute('cy','80');document.getElementById('sunC').setAttribute('cx','310')}
+}
+
+const allQ=[
+  /* ── 개항기 ── */
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"강화도 조약(1876)은 조선이 외국과 맺은 최초의 근대적 조약으로, 치외법권을 규정한 불평등 조약이었다.",
+   ans:true,exp:"강화도 조약(조일수호조규)은 조선이 일본과 체결한 최초의 근대적 조약입니다. 일본에 치외법권(영사재판권)과 해안 측량권을 인정한 불평등 조약이었습니다."},
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"강화도 조약 이후 부산·원산·인천 3개 항구가 순차적으로 개항되었다.",
+   ans:true,exp:"부산(1876), 원산(1880), 인천(1883) 순으로 개항되었습니다. 동시 개방이 아닌 순차적 개항이었습니다."},
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"《조선책략》은 미국·일본이 함께 저술하여 수신사 김홍집에게 전달한 외교 전략서이다.",
+   ans:false,exp:"《조선책략》은 청의 외교관 황쭌셴(황준헌)이 단독으로 저술한 책입니다. 1880년 수신사 김홍집이 일본에서 이 책을 가져왔습니다."},
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"《조선책략》은 러시아를 견제하기 위해 친중국·결일본·연미국의 외교 노선을 제시하였다.",
+   ans:true,exp:"황쭌셴은 러시아의 남하를 막기 위해 청과 친하게 지내고(親中國), 일본과 연결하며(結日本), 미국과 연합해야 한다(聯美國)고 주장하였습니다."},
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"임오군란(1882)은 13개월간 밀린 봉급으로 겨와 모래가 섞인 쌀을 받은 구식 군인들이 일으킨 봉기이다.",
+   ans:true,exp:"1882년 구식 군인들은 오랫동안 밀린 봉급을 받았을 때 먹을 수 없는 쌀을 지급받자 분노하여 봉기하였습니다. 별기군에 비해 차별받던 불만도 쌓여 있었습니다."},
+  {era:"개항기",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"임오군란 이후 청과 조선 사이에 조청상민수륙무역장정이 체결되어 청의 경제적 침투가 강화되었다.",
+   ans:true,exp:"임오군란을 진압한 청은 군대를 조선에 주둔시키고, 1882년 조청상민수륙무역장정을 체결하여 청 상인의 조선 내지 통상권을 인정받았습니다."},
+
+  /* ── 갑신정변 ── */
+  {era:"갑신정변",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"갑신정변(1884)은 김옥균·박영효·서재필 등 급진개화파가 우정총국 개국 축하연을 이용하여 일으켰다.",
+   ans:true,exp:"1884년 12월 급진개화파(개화당)는 우정총국 개국 축하연 자리를 이용하여 정변을 일으키고 개혁 정부를 수립하였습니다."},
+  {era:"갑신정변",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"갑신정변 14개조 개혁안에는 청에 대한 사대 관계 폐지, 문벌 폐지, 인민 평등권 확립이 포함되었다.",
+   ans:true,exp:"14개조 정강에는 청에 대한 사대 폐지, 문벌 폐지와 인민 평등권 확립, 재정 일원화, 혜상공국 폐지 등 근대적 개혁 내용이 담겼습니다."},
+  {era:"갑신정변",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"갑신정변은 청군 개입으로 3일 만에 실패하였고, 이후 조선에서 청의 정치적 영향력이 더욱 강화되었다.",
+   ans:true,exp:"청군의 개입으로 정변이 3일 만에 진압되면서 청의 조선 내정 간섭이 더욱 심화되었습니다. 이후 위안스카이가 조선에 주재하며 내정을 간섭하였습니다."},
+  {era:"갑신정변",unit:"Ⅲ-1. 문호 개방과 개화 정책",
+   q:"갑신정변 직후 체결된 한성조약에서 조선은 일본에 배상금을 지불하고 사죄 사절을 파견하기로 하였다.",
+   ans:true,exp:"1885년 한성조약이 체결되어 조선은 일본에 배상금 지불, 공사관 신축 비용 부담, 사죄 사절 파견 등을 약속하였습니다."},
+
+  /* ── 동학농민운동 ── */
+  {era:"동학농민운동",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"동학농민운동 1차 봉기(1894)의 직접적 원인은 고부군수 조병갑의 불법 수세와 만석보 강제 축조였다.",
+   ans:true,exp:"고부군수 조병갑이 만석보를 강제로 쌓게 하고 과도한 수세를 부과하자, 전봉준이 농민들을 이끌고 고부 관아를 습격하면서 1차 봉기가 시작되었습니다."},
+  {era:"동학농민운동",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"동학농민군은 황토현·황룡촌 전투에서 관군을 물리치고 전주성을 점령하였다.",
+   ans:true,exp:"동학농민군은 황토현(1894.4)과 황룡촌 전투에서 관군에게 승리한 후 전주성을 점령하였습니다."},
+  {era:"동학농민운동",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"전주화약 이후 동학농민군은 집강소를 설치하여 폐정개혁안을 자치적으로 실시하였다.",
+   ans:true,exp:"전주화약(1894.5) 이후 동학농민군은 전라도 각 군현에 집강소를 설치하여 탐관오리 처벌, 노비 문서 소각, 토지 균분 등 폐정 개혁을 자치적으로 추진하였습니다."},
+  {era:"동학농민운동",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"동학농민운동 2차 봉기는 일본군의 경복궁 점령에 반발하여 반외세를 기치로 일어났다.",
+   ans:true,exp:"1894년 6월 일본군이 경복궁을 점령하고 내정 간섭을 강화하자, 동학농민군은 반외세를 내세우며 남접·북접이 연합하여 2차 봉기를 일으켰습니다."},
+  {era:"동학농민운동",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"동학농민군은 공주 우금치 전투에서 근대식 무기를 갖춘 관군·일본군 연합군에 패배하였다.",
+   ans:true,exp:"1894년 11월 공주 우금치 전투에서 동학농민군은 신식 무기로 무장한 관군과 일본군에 맞서 싸웠으나 크게 패배하였고, 이후 동학농민운동은 사실상 막을 내렸습니다."},
+
+  /* ── 갑오개혁 ── */
+  {era:"갑오개혁",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"갑오개혁(1894)으로 과거제가 폐지되고 신분제가 공식 철폐되었으며, 조혼 금지·과부 재가 허용이 이루어졌다.",
+   ans:true,exp:"군국기무처 주도로 추진된 1차 갑오개혁에서 과거제 폐지, 신분제 철폐, 조혼 금지, 과부 재가 허용, 연좌제·고문 폐지 등 신분·사회 분야 개혁이 단행되었습니다."},
+  {era:"갑오개혁",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"갑오개혁은 조선 정부가 일본의 강요와 간섭 없이 자주적으로 추진한 개혁이다.",
+   ans:false,exp:"갑오개혁은 청일전쟁 와중에 일본이 경복궁을 점령하고 군국기무처 설치를 강요하면서 시작된 개혁으로, 타율적 성격이 강합니다. 다만 개혁 주체인 조선 관료들의 자주적 의지도 일부 반영되었습니다."},
+  {era:"갑오개혁",unit:"Ⅲ-2. 근대적 개혁의 추진",
+   q:"2차 갑오개혁 때 발표된 홍범 14조는 청에 대한 사대 관계 청산과 자주 독립을 선포한 내용을 담고 있다.",
+   ans:true,exp:"1895년 고종이 종묘에서 선포한 홍범 14조는 청에 대한 의존 관계 청산, 왕실과 정부 사무 분리, 탁지아문으로 재정 일원화 등을 규정하였습니다."},
+
+  /* ── 대한제국·독립협회 ── */
+  {era:"대한제국",unit:"Ⅲ-3. 자주 독립과 근대 국가 수립 운동",
+   q:"아관파천(1896) 이후 고종은 약 1년간 러시아 공사관에 머물렀으며, 이 기간 열강의 이권 침탈이 심화되었다.",
+   ans:true,exp:"1896년 2월부터 1897년 2월까지 고종이 러시아 공사관에 머무는 동안 친러 내각이 구성되었고, 러시아·미국·일본·영국 등 열강이 광산·삼림·철도 부설권 등 각종 이권을 침탈하였습니다."},
+  {era:"대한제국",unit:"Ⅲ-3. 자주 독립과 근대 국가 수립 운동",
+   q:"독립협회는 서재필이 주도하여 1896년 창립하였으며, 독립신문 발간과 독립문 건립을 추진하였다.",
+   ans:true,exp:"서재필은 1896년 독립신문을 창간하고 독립협회를 창립하였습니다. 영은문이 있던 자리에 독립문을 세우고 독립관을 수리하여 민권·자강 운동의 거점으로 삼았습니다."},
+  {era:"대한제국",unit:"Ⅲ-3. 자주 독립과 근대 국가 수립 운동",
+   q:"독립협회는 헌의 6조를 결의하며 의회식 중추원 설립을 요구하였으나, 보수 세력의 반발로 해산되었다.",
+   ans:true,exp:"1898년 독립협회는 만민공동회에서 헌의 6조를 채택하고 의회식으로 개편된 중추원 설립을 요구하였습니다. 그러나 황국협회와 보수 세력의 방해로 독립협회는 강제 해산되었습니다."},
+  {era:"대한제국",unit:"Ⅲ-3. 자주 독립과 근대 국가 수립 운동",
+   q:"고종은 1897년 원구단에서 황제 즉위식을 거행하고, 국호를 대한제국·연호를 광무로 정하였다.",
+   ans:true,exp:"고종은 환구단(원구단)에서 황제 즉위식을 올리고 국호를 대한제국, 연호를 광무로 선포하여 자주 독립 국가임을 국내외에 천명하였습니다."},
+  {era:"대한제국",unit:"Ⅲ-3. 자주 독립과 근대 국가 수립 운동",
+   q:"광무개혁의 원칙 '구본신참'은 서양 제도를 전면 수용한다는 뜻이다.",
+   ans:false,exp:"구본신참(舊本新參)은 '옛것을 근본으로 삼고 새것을 참고한다'는 의미입니다. 전통 체제를 유지하면서 서양 근대 문물을 선택적으로 받아들이는 점진적·보수적 개혁 방향을 나타냅니다."},
+
+  /* ── 을사늑약·국권 피탈 ── */
+  {era:"을사늑약",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"을사늑약(1905)으로 대한제국의 외교권이 박탈되고, 서울에 통감부가 설치되었다.",
+   ans:true,exp:"러일전쟁 승리 후 일본은 을사늑약을 강요하여 대한제국의 외교권을 빼앗고 서울에 통감부를 설치하였습니다. 초대 통감은 이토 히로부미였습니다."},
+  {era:"을사늑약",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"을사늑약 체결 당시 고종은 끝까지 서명을 거부하였으며, 외부대신 박제순의 도장이 강제로 사용되었다.",
+   ans:true,exp:"고종은 을사늑약에 서명하기를 끝까지 거부하였고, 이 때문에 국제법상 조약의 성립 여부가 문제가 되기도 합니다. 일본은 박제순 외부대신의 도장을 강제로 찍어 조약을 성립시켰습니다."},
+  {era:"을사늑약",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"헤이그 특사 파견(1907)은 을사늑약의 부당함을 국제사회에 호소하기 위해 이상설·이준·이위종을 파견한 것이다.",
+   ans:true,exp:"고종은 1907년 네덜란드 헤이그에서 열린 만국평화회의에 이상설·이준·이위종을 특사로 파견하였습니다. 그러나 일본의 방해로 회의 참석이 좌절되었고, 이를 빌미로 일본은 고종을 강제 퇴위시켰습니다."},
+  {era:"국권 피탈",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"정미 7조약(한일신협약, 1907)으로 대한제국의 군대가 강제 해산되었다.",
+   ans:true,exp:"1907년 체결된 정미 7조약의 부속 각서에 따라 대한제국 군대가 강제 해산되었습니다. 이에 반발한 시위대 병사들이 의병에 합류하면서 의병 운동이 더욱 격화되었습니다."},
+  {era:"국권 피탈",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"13도 창의군(1908)은 서울 진공 작전을 시도하였으나 일본군의 저지로 실패하였다.",
+   ans:true,exp:"1908년 이인영을 총대장으로 전국 의병이 연합한 13도 창의군을 결성하였습니다. 서울 근교까지 진격하였으나 일본군의 강력한 저지로 서울 진공 작전은 실패하였습니다."},
+  {era:"국권 피탈",unit:"Ⅳ-1. 일제의 국권 침탈과 저항",
+   q:"한일 병합 조약은 1910년 8월에 체결되었으며, 이로써 대한제국이 멸망하였다.",
+   ans:true,exp:"1910년 8월 22일 한일 병합 조약이 체결되고 8월 29일 공포됨으로써 대한제국이 멸망하고 일제의 식민 지배가 시작되었습니다."},
+
+  /* ── 1910년대 무단통치 ── */
+  {era:"1910년대",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"일제는 1910년대 헌병 경찰제를 실시하여 조선인에 대한 즉결 처분권을 행사하였다.",
+   ans:true,exp:"1910년대 무단통치기에 일제는 헌병이 경찰 업무를 겸하는 헌병 경찰제를 시행하였습니다. 헌병 경찰은 재판 없이 태형이나 구류를 부과하는 즉결 처분권을 행사하였습니다."},
+  {era:"1910년대",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"토지 조사 사업(1910~1918)은 기한부 신고제를 원칙으로 하여, 신고하지 못한 토지는 조선총독부에 귀속되었다.",
+   ans:true,exp:"복잡한 절차와 짧은 신고 기간으로 신고하지 못한 공유지·마을 공유지·국유지 등이 대거 총독부 소유가 되었고, 많은 농민이 소작농으로 전락하였습니다."},
+
+  /* ── 3·1운동 ── */
+  {era:"3·1운동",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"3·1운동(1919)은 민족대표 33인의 독립선언과 탑골공원 만세 시위를 시작으로 전국으로 확산되었다.",
+   ans:true,exp:"1919년 3월 1일 민족대표 33인은 태화관에서 독립선언식을 거행하였고, 학생들은 탑골공원에서 독립선언서를 낭독하며 만세 시위를 시작하였습니다. 이후 시위는 전국으로 퍼져 나갔습니다."},
+  {era:"3·1운동",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"기미독립선언서(독립선언서)는 최남선이 기초하고, 민족대표 33인이 서명하였다.",
+   ans:true,exp:"독립선언서는 최남선이 작성(기초)하였으며, 천도교·기독교·불교계 인사들로 구성된 민족대표 33인이 서명하였습니다. 대표적 서명자로는 손병희, 길선주 등이 있습니다."},
+  {era:"3·1운동",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"3·1운동은 비폭력 시위로만 전개되었으며 사상자가 없었다.",
+   ans:false,exp:"3·1운동은 초기에 비폭력 원칙으로 시작되었으나, 일제의 총칼 진압으로 수많은 사상자가 발생하였습니다. 화성 제암리 교회 학살 사건 등 잔혹한 탄압이 이어졌습니다."},
+  {era:"3·1운동",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"3·1운동의 영향으로 일제는 무단통치를 문화통치로 전환하였다.",
+   ans:true,exp:"3·1운동 이후 일제는 통치 방식을 바꿔 헌병 경찰제를 보통 경찰제로 전환하고, 일부 언론·출판을 허용하는 이른바 문화통치를 실시하였습니다. 그러나 이는 기만적 유화책이었습니다."},
+
+  /* ── 대한민국 임시정부 ── */
+  {era:"임시정부",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"대한민국 임시정부는 3·1운동 직후인 1919년 4월 중국 상하이에서 수립되었다.",
+   ans:true,exp:"3·1운동 이후 독립운동을 조직적으로 이끌기 위해 1919년 4월 중국 상하이에서 대한민국 임시정부가 수립되었습니다. 이는 민주 공화제를 채택한 임시정부였습니다."},
+  {era:"임시정부",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"대한민국 임시정부는 1919년 9월 대통령제로 개헌하였으며, 이승만이 초대 대통령에 취임하였다.",
+   ans:true,exp:"임시정부는 처음에 국무총리제로 출발하였으나 1919년 9월 대통령제로 헌법을 개정하였습니다. 이때 이승만이 초대 대통령으로 취임하였습니다."},
+  {era:"임시정부",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"임시정부는 연통제와 교통국을 통해 국내와 비밀리에 연락하고 독립운동 자금을 조달하였다.",
+   ans:true,exp:"연통제는 국내 비밀 행정 연락망이었고, 교통국은 통신 기관이었습니다. 이를 통해 임시정부는 독립공채 판매 등으로 자금을 마련하고 국내 독립운동과 연계하였습니다."},
+  {era:"임시정부",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"대한민국 임시정부는 1940년 충칭에서 한국광복군을 창설하였다.",
+   ans:true,exp:"1940년 충칭에서 지청천을 총사령관으로 한국광복군이 창설되었습니다. 1941년 태평양전쟁 발발 후 대일·대독 선전포고를 하고, 인도·미얀마 전선에서 영국군과 연합 작전을 펼쳤습니다."},
+
+  /* ── 독립운동 ── */
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"의열단은 1919년 김원봉이 만주 지린에서 결성하였으며, 신채호의 조선혁명선언을 활동 지침으로 삼았다.",
+   ans:true,exp:"김원봉은 1919년 만주 지린에서 의열단을 결성하였습니다. 1923년 신채호가 작성한 조선혁명선언(의열단 선언)을 강령으로 채택하고 일제 주요 인물 암살과 식민 기관 파괴를 목표로 활동하였습니다."},
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"봉오동 전투(1920)에서 홍범도가 이끄는 독립군 연합 부대가 일본군을 최초로 격파하였다.",
+   ans:true,exp:"1920년 6월 홍범도의 대한독립군을 중심으로 한 독립군 연합 부대가 봉오동에서 일본군 정규군을 매복 작전으로 크게 격파하였습니다."},
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"청산리 대첩(1920)에서 김좌진의 북로군정서군과 홍범도의 대한독립군이 연합하여 일본군에 대승을 거뒀다.",
+   ans:true,exp:"1920년 10월 청산리 일대에서 6일간의 전투(백운평·완루구·천수평·어랑촌 등)를 통해 독립군 연합 부대가 일본군을 상대로 독립운동 사상 최대 규모의 승리를 거뒀습니다."},
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"간도 참변(1920)은 봉오동·청산리 전투에 보복하기 위해 일본군이 간도 한인 마을을 학살한 사건이다.",
+   ans:true,exp:"1920년 10월~11월 봉오동·청산리 패전에 보복하기 위해 일본군이 간도 일대 한인 마을을 무차별 공격하여 수천 명의 무고한 한인을 학살하였습니다."},
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"한인애국단은 김구가 1931년 조직하였으며, 이봉창과 윤봉길이 단원으로 의거를 수행하였다.",
+   ans:true,exp:"김구는 1931년 한인애국단을 조직하였습니다. 이봉창은 1932년 1월 도쿄에서 일왕 히로히토 암살을 시도하였고, 윤봉길은 같은 해 4월 상하이 훙커우 공원 의거를 일으켰습니다."},
+  {era:"독립운동",unit:"Ⅳ-3. 다양한 독립운동의 전개",
+   q:"윤봉길 의거(1932) 이후 중국 국민당 정부가 임시정부를 전폭적으로 지원하기 시작하였다.",
+   ans:true,exp:"윤봉길 의거에 감동한 장제스는 임시정부를 전폭 지원하겠다고 약속하였습니다. 이후 임시정부는 중국 국민당의 지원을 받아 활동 기반을 강화할 수 있었습니다."},
+
+  /* ── 1920~30년대 국내 운동 ── */
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"물산장려운동(1920년대)은 '내 살림 내 것으로'를 구호로 국산품 애용과 민족 자본 육성을 목표로 하였다.",
+   ans:true,exp:"1920년 평양에서 조만식을 중심으로 시작된 물산장려운동은 '조선 사람 조선 것'이라는 구호를 내걸고 일본 상품 불매·국산품 애용을 통한 민족 경제 자립을 추구하였습니다."},
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"6·10 만세 운동(1926)은 순종의 장례일을 이용하여 학생들이 계획·실행한 항일 만세 운동이다.",
+   ans:true,exp:"1926년 6월 10일 순종의 인산일(장례일)에 학생들이 만세 운동을 일으켰습니다. 사회주의 세력도 합세하려 하였으나 사전에 발각되었고, 학생들이 중심이 되어 시위를 전개하였습니다."},
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"신간회(1927)는 비타협적 민족주의 계열과 사회주의 계열이 연합하여 결성한 최대의 항일 민족 운동 단체였다.",
+   ans:true,exp:"1927년 민족주의 진영과 사회주의 진영이 민족 협동 전선을 결성하여 신간회를 창립하였습니다. 전국 140여 개 지회를 가진 최대 규모의 사회·정치 단체로, 여성 단체 근우회도 함께 결성되었습니다."},
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"광주 학생 항일 운동(1929)은 한·일 학생 간의 충돌에서 비롯되어 전국으로 확산되었다.",
+   ans:true,exp:"1929년 10월 광주에서 일본 남학생이 한국 여학생을 희롱한 사건을 계기로 한·일 학생 충돌이 발생하였습니다. 일본 경찰의 차별적 처리에 분노한 학생들의 시위가 이듬해 초까지 전국으로 퍼졌습니다."},
+
+  /* ── 민족 말살 통치 ── */
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"1930년대 후반 일제의 황국신민화 정책에는 창씨개명 강요, 신사참배 강요, 조선어 교육 폐지가 포함되었다.",
+   ans:true,exp:"중일전쟁(1937) 이후 일제는 내선일체를 강조하며 창씨개명(1940), 신사참배 강요, 조선어 교육 폐지(1941), 학도 지원병제·징병제 시행 등 민족 말살 정책을 강화하였습니다."},
+  {era:"일제강점기",unit:"Ⅳ-2. 일제 식민 통치와 민족 운동",
+   q:"조선어학회(한글학회의 전신)는 한글 맞춤법 통일안과 표준어를 제정하여 민족 문화 수호에 기여하였다.",
+   ans:true,exp:"조선어학회는 1933년 한글 맞춤법 통일안, 1936년 표준어 사정을 발표하였습니다. 1942년 일제는 조선어학회 회원들을 독립운동가로 몰아 체포한 조선어학회 사건을 일으켰습니다."},
+
+  /* ── 광복 ── */
+  {era:"광복",unit:"Ⅴ-1. 8·15 광복과 대한민국 정부 수립",
+   q:"카이로 선언(1943)에서 미·영·중 3국은 '적당한 절차를 거쳐' 한국을 독립시키겠다고 처음으로 국제적으로 약속하였다.",
+   ans:true,exp:"1943년 카이로 선언은 한국 독립을 최초로 국제적으로 보장한 문서입니다. '적당한 절차를 거쳐(in due course)'라는 표현 때문에 즉각 독립이 아닌 조건부 독립 약속이라는 비판도 있습니다."},
+  {era:"광복",unit:"Ⅴ-1. 8·15 광복과 대한민국 정부 수립",
+   q:"광복(1945. 8. 15.)은 미국의 원자폭탄 투하와 소련의 대일 선전포고가 직접적 계기가 되었다.",
+   ans:true,exp:"히로시마(8.6)·나가사키(8.9) 원폭 투하와 소련의 대일 선전포고(8.8) 이후 일본이 무조건 항복을 선언하여 1945년 8월 15일 광복을 맞이하였습니다."},
+  {era:"광복",unit:"Ⅴ-1. 8·15 광복과 대한민국 정부 수립",
+   q:"얄타 회담(1945)에서 미·소 양국은 한반도를 38도선으로 나누어 분할 점령하기로 공식 합의하였다.",
+   ans:false,exp:"얄타 회담에서 38도선 분할은 공식 결정되지 않았습니다. 38도선 분할은 1945년 8월 일본 항복 직후 미국이 소련에 제안하면서 이루어진 것이며, 얄타 회담의 공식 합의 사항이 아닙니다."},
+];
+
+let questions=[],cur=0,score=0,answers=[];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function startQuiz(){
+  questions=shuffle([...allQ]).slice(0,10);
+  cur=0;score=0;answers=[];
+  showScr('quizScreen');
+  applySky(0);
+  loadQ();
+}
+
+function showScr(id){
+  ['startScreen','quizScreen','resultScreen'].forEach(s=>{
+    document.getElementById(s).style.display=s===id?'block':'none';
+  });
+}
+
+function getThemeKey(i){return i<=2?'morning':i<=5?'day':i<=8?'night':'dawn'}
+function applySky(i){
+  const tk=getThemeKey(i);
+  const sky=document.getElementById('skySvg');
+  let dd=sky.querySelector('#_gd');
+  if(!dd){dd=document.createElementNS('http://www.w3.org/2000/svg','defs');dd.id='_gd';sky.insertBefore(dd,sky.firstChild)}
+  const THEMES={
+    morning:{skyColors:['#1a0530','#7a3060','#c05030','#e87030']},
+    day:{skyColors:['#2266aa','#3388cc','#66aadd','#99ccee']},
+    night:{skyColors:['#0d0522','#160840','#1e0a3c','#28083a']},
+    dawn:{skyColors:['#0a0318','#180630','#2a0840','#1a0530']}
+  };
+  dd.innerHTML=Object.entries(THEMES).map(([k,t])=>`<linearGradient id="sg_${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${t.skyColors[0]}"/><stop offset="33%" stop-color="${t.skyColors[1]}"/><stop offset="66%" stop-color="${t.skyColors[2]}"/><stop offset="100%" stop-color="${t.skyColors[3]}"/></linearGradient>`).join('');
+  document.getElementById('skyR').setAttribute('fill',`url(#sg_${tk})`);
+  const isMo=tk==='morning',isDa=tk==='day',isNi=tk==='night',isDw=tk==='dawn';
+  document.getElementById('starsG').setAttribute('opacity',(isNi||isDw)?'1':'0');
+  document.getElementById('sunC').setAttribute('opacity',isMo?'0.6':isDa?'1':'0');
+  document.getElementById('moonC').setAttribute('opacity',(isNi||isDw)?'1':'0');
+  document.getElementById('cloudsDay').setAttribute('opacity',isDa?'1':isMo?'0.5':'0');
+  document.getElementById('cloudsDawn').setAttribute('opacity',isDw?'1':'0');
+  if(isMo){document.getElementById('sunC').setAttribute('cy','370');document.getElementById('sunC').setAttribute('cx','200')}
+  else{document.getElementById('sunC').setAttribute('cy','80');document.getElementById('sunC').setAttribute('cx','310')}
+}
+
+const themeLabel={morning:'🌅 아침',day:'☀️ 낮',night:'🌙 밤',dawn:'🌃 새벽'};
+
+function loadQ(){
+  const q=questions[cur];
+  document.getElementById('qNum').textContent=`문제 ${cur+1} / 10`;
+  document.getElementById('qScore').textContent=`점수: ${score}`;
+  document.getElementById('progFill').style.width=`${(cur+1)*10}%`;
+  document.getElementById('qEra').textContent=`${q.era}  ·  ${themeLabel[getThemeKey(cur)]}`;
+  document.getElementById('qUnit').textContent=`📖 ${q.unit}`;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('feedback').style.display='none';
+  const nb=document.getElementById('nextBtn');
+  nb.style.display='none';nb.className='next-btn';
+  const ob=document.getElementById('oBtn'),xb=document.getElementById('xBtn');
+  ob.className='ox-btn';xb.className='ox-btn';
+}
+
+function answer(isO){
+  const q=questions[cur];
+  const ok=isO===q.ans;
+  if(ok) score++;
+  answers.push({q:q.q,era:q.era,unit:q.unit,userAns:isO,ok,exp:q.exp,corr:q.ans});
+  const ob=document.getElementById('oBtn'),xb=document.getElementById('xBtn');
+  ob.classList.add(isO?'sel-o':'dis');
+  xb.classList.add(!isO?'sel-x':'dis');
+  ob.classList.add('dis');xb.classList.add('dis');
+  const fb=document.getElementById('feedback');
+  fb.className='feedback '+(ok?'ok':'ng');
+  document.getElementById('fbIcon').textContent=ok?'🎉':'😢';
+  document.getElementById('fbLbl').textContent=ok?'정답입니다!':'틀렸습니다';
+  document.getElementById('fbDesc').textContent=q.exp;
+  document.getElementById('fbUnit').textContent=`📖 ${q.unit}`;
+  document.getElementById('fbAns').textContent=`정답: ${q.ans?'⭕':'❌'}  |  내 답변: ${isO?'⭕':'❌'}`;
+  fb.style.display='block';
+  const nb=document.getElementById('nextBtn');
+  nb.className='next-btn '+(ok?'ok':'ng');
+  nb.textContent=cur<9?`다음 문제 (${cur+2}/10) →`:'결과 보기 🏆';
+  nb.style.display='block';
+}
+
+function nextQ(){
+  cur++;
+  if(cur>=10){showResult();return}
+  applySky(cur);
+  loadQ();
+}
+
+function showResult(){
+  showScr('resultScreen');
+  applySky(9);
+  let emoji,title,grade,gs;
+  if(score===10){emoji='🏆';title='역사 마스터 달성!';grade='100점 만점! 독립운동가의 정신을 온몸으로 이어받은 역사의 주인공입니다!';gs='background:rgba(255,200,50,.2);border:1px solid rgba(255,200,50,.5);color:#ffd700'}
+  else if(score>=8){emoji='🎖️';title='우수한 역사 실력!';grade=`${score*10}점 — 훌륭합니다! 조금만 더 공부하면 만점도 가능합니다.`;gs='background:rgba(40,200,100,.15);border:1px solid rgba(40,200,100,.4);color:#28e070'}
+  else if(score>=6){emoji='📚';title='역사 공부 진행 중!';grade=`${score*10}점 — 괜찮아요! 틀린 문제를 교과서에서 복습해 보세요.`;gs='background:rgba(80,140,255,.15);border:1px solid rgba(80,140,255,.4);color:#7cb4ff'}
+  else if(score>=4){emoji='💪';title='더 열심히 해보자!';grade=`${score*10}점 — 조금 더 분발이 필요해요. 다시 도전!`;gs='background:rgba(255,140,40,.15);border:1px solid rgba(255,140,40,.4);color:#ff9640'}
+  else{emoji='🔥';title='교과서를 펼쳐라!';grade=`${score*10}점 — 개항기부터 교과서를 꼼꼼히 복습하세요!`;gs='background:rgba(220,50,50,.15);border:1px solid rgba(220,50,50,.4);color:#e83c3c'}
+  document.getElementById('resEmoji').textContent=emoji;
+  document.getElementById('resTitle').textContent=title;
+  document.getElementById('resScore').textContent=`${score} / 10`;
+  const rg=document.getElementById('resGrade');
+  rg.textContent=grade;rg.style.cssText=gs+';border-radius:12px;padding:14px 20px';
+  document.getElementById('resReview').innerHTML=
+    '<div style="font-size:11px;font-weight:700;color:rgba(255,200,50,.7);margin-bottom:10px;letter-spacing:1px">📋 전체 복습</div>'+
+    answers.map((a,i)=>`<div class="ri"><div class="ri-q">${i+1}. [${a.era}] ${a.q}</div><span class="${a.ok?'ri-ok':'ri-ng'}">${a.ok?'✅ 정답':'❌ 오답'}</span> · 내 답: ${a.userAns?'⭕':'❌'} / 정답: ${a.corr?'⭕':'❌'}<div class="ri-exp">${a.exp}</div><div class="ri-unit">📖 ${a.unit}</div></div>`).join('');
+}
+
+function restart(){showScr('startScreen');applySky(0)}
+applySky(0);
+</script>
